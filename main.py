@@ -1,4 +1,4 @@
-import os, sys, glob
+import os, sys
 from PIL import Image
 
 ### TERMINAL ARGUMENTS ###
