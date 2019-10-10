@@ -1,5 +1,15 @@
 # ScrollingScore
 ---
+## Background Examples
+Used to automate a large part of the image editing in making scrolling score sheet music videos, specifically to maximize the number of systems per slide within the constraints of a 16:9 resolution.
+See usage on my YouTube channel [here](https://www.youtube.com/jleightcap).
+
+![Orchestral](Examples/orchestral.jpg)
+<center>Split output: <i>Pärt - Symphony No. 4</i></center>
+
+![Piano](Examples/piano.png)
+<center>-single flag output: <i>Stockhausen - Kontakte</i></center>
+
 ## Requirements
 - Python3. Install Python 3.x and run `python3 --version` to verify your installation.
 - PIL (Python Imaging Library). Using pip, `pip install Pillow`.
@@ -19,7 +29,7 @@ Place images you want made into slides in the `./Sheets` directory, so that in t
 ```
 Execute the program with
 ```
-python3 main.py [options]
+python3 main.py [flags]
 ```
 and the resulting prepared slides directory will look like
 ```
@@ -34,15 +44,15 @@ and the resulting prepared slides directory will look like
     ├── ...
     └── n.png
 ```
-### Options
+### Flags
 - `-h`: help, print this README
 - `-q`: quiet, don't display status
 - `-single`: export each image to an individual slide, rather than combining tall pages
 ### Considerations
-- Executing with python 2.x won't necessarily throw errors, however will return incorrectly scaled images.
 - The slides are prepared in _alphabetical order_. This is most often a constant name with an increasing number like `Image001.png -> Image002.png -> ... -> ImageN.png`.
 ## Todo
 - Improve the messages displayed during conversion, with a status bar.
-- Add direct PDF support
+- Potential rewrite in C++.
+- Add direct PDF support/hooks
 - Add `-single` for specific page ranges (separate title slides for first few pages, for example)
-- Image straightening/partitioning
+- Image straightening/partitioning (Knuth-Plass line wrapping)

@@ -8,7 +8,6 @@ from PIL import Image
 # -single := forced one page per slide
 args = sys.argv[1:]
 
-
 # -h, print README and quit
 if "-h" in args:
     with open('./README.md') as f:
@@ -44,7 +43,7 @@ verifyDirectory('./Slides')
 # Is better suited for a double slide (two tall images side by side)?
 def isTall(img):
     # img = Image.open(img)
-    return img.size[0] / img.size[1] < (16/9)
+    return img.size[0]/img.size[1] < (16/9)
 
  # White dimensioned BG image
 def bgImg(size):
