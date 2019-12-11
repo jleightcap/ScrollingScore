@@ -3,10 +3,10 @@
 ###########
 # OPTIONS #
 ###########
-FPS=60
 IMGS="./Sheets"
-OUT="test.mp4"
-FRAMES_DATA="frames.txt"
+OUT="output.mp4"
+TIME_DATA="times.txt"
+FPS=25
 
 
 
@@ -18,6 +18,7 @@ FILES=`find $IMGS/*.png`
 # Manually count images in $IMGS
 let IMG_COUNT=0
 for _ in ${FILES[@]}; do (( IMG_COUNT+=1 )); done
+IMG_COUNT=$((IMG_COUNT-1))
 
 # Start $FULL_SCRIPT, the eventual string to be eval'd.
 # Import images directory
@@ -25,18 +26,27 @@ FULL_SCRIPT="ffmpeg -i $IMGS/%3d.png "
 # Import audio, argv[1]
 FULL_SCRIPT+="-i $1 "
 
-# Read frame data 
-declare -a FRAMES
+# Read absolute time data 
+declare -a TIMES
 while read line; do
+  # ignore commented lines
   [[ "$line" =~ ^[[:space:]]*# ]] && continue
-  FRAMES+=($line)
-done < $FRAMES_DATA
+  # convert "HH:MM:SS" -> seconds
+  # these times are absolute
+  TIMES+=($(echo $line | awk -F: '{print($1*3600)+($2*60)+$3}'))
+done < $TIME_DATA
+
+# Convert times into relative lengths based on previous timestamp
+TIMES_RELATIVE=(${TIMES[0]})
+for (( ii=1; ii<${#TIMES[@]}; ii++ )); do
+  TIMES_RELATIVE+=($((${TIMES[$ii]} - ${TIMES[$ii - 1]})))
+done
 
 FRAME_COEF=""
-for (( ii=0; ii<$IMG_COUNT-1; ii++ )) do
-  FRAME_COEF+="'${FRAMES[$ii]}*eq(in,$ii)'+";
+for (( ii=0; ii<$IMG_COUNT; ii++ )); do
+  FRAME_COEF+="'$((${TIMES_RELATIVE[$ii]}*$FPS))*eq(in,$ii)'+";
 done
-FRAME_COEF+="'50*eq(in,$IMG_COUNT)'"
+FRAME_COEF+="'$((${TIMES_RELATIVE[$IMG_COUNT]}*$FPS))*eq(in,$IMG_COUNT)'"
 
 FULL_SCRIPT+="-vf \"zoompan=d=$FRAME_COEF\" "
 FULL_SCRIPT+=$OUT
